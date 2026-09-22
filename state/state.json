@@ -1,0 +1,119 @@
+{
+  "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
+  "updated_at": "2026-09-23T07:22:24+09:00",
+  "next_batch": {
+    "task": "EP001 스토리 초안 완료 후 라이카 채점 요청",
+    "scheduled_at": "2026-09-23T15:00:00+09:00"
+  },
+  "wip_limit": 3,
+  "episodes": [
+    {
+      "id": "EP001",
+      "title": "1화 (16쪽)",
+      "stages": {
+        "story": {
+          "status": "in_progress",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "conti": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "image": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "edit": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "publish": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        }
+      }
+    },
+    {
+      "id": "EP002",
+      "title": "2화 (16쪽)",
+      "stages": {
+        "story": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "conti": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "image": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "edit": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "publish": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        }
+      }
+    },
+    {
+      "id": "EP003",
+      "title": "3화 (16쪽)",
+      "stages": {
+        "story": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "conti": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "image": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "edit": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        },
+        "publish": {
+          "status": "todo",
+          "score": null,
+          "regen_count": 0,
+          "updated_at": "2026-09-23T07:22:24+09:00"
+        }
+      }
+    }
+  ]
+}

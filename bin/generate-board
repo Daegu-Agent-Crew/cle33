@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""CLE33 현황판 생성기.
+
+state/state.json(단일 소스)을 읽어 index.html(현황판)을 완전 대체 생성한다.
+사람이 index.html을 직접 수정하지 않는다(리포 AGENTS.md 원칙).
+사용: python3 bin/generate-board  (리포 어디서든 실행 가능)
+의존성: python3 표준 라이브러리만 사용.
+"""
+import html
+import json
+import sys
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+STATE_PATH = REPO_ROOT / "state" / "state.json"
+OUT_PATH = REPO_ROOT / "index.html"
+
+STAGES = [
+    ("story", "스토리"),
+    ("conti", "콘티"),
+    ("image", "이미지"),
+    ("edit", "편집"),
+    ("publish", "발행"),
+]
+STATUS_LABEL = {
+    "todo": ("대기", "st-todo"),
+    "in_progress": ("진행", "st-run"),
+    "done": ("완료", "st-done"),
+    "blocked": ("막힘", "st-block"),
+}
+ISSUE_URL = "https://github.com/Daegu-Agent-Crew/creative-loop-engineering2/issues/93"
+REPO_URL = "https://github.com/Daegu-Agent-Crew/cle33"
+KST = timezone(timedelta(hours=9))
+
+
+def esc(value) -> str:
+    return html.escape(str(value), quote=True)
+
+
+def fmt_score(cell) -> str:
+    score = cell.get("score")
+    return "미채점" if score is None else f"{score}/5"
+
+
+def cell_html(cell) -> str:
+    status = cell.get("status", "todo")
+    label, cls = STATUS_LABEL.get(status, (status, "st-todo"))
+    regen = cell.get("regen_count", 0)
+    return (
+        f'<td class="{cls}"><span class="badge">{esc(label)}</span>'
+        f'<span class="meta">{esc(fmt_score(cell))} · 재생 {esc(regen)}회</span>'
+        f'<span class="ts">{esc(cell.get("updated_at", ""))}</span></td>'
+    )
+
+
+def build_html(state: dict, generated_at: str) -> str:
+    episodes = state.get("episodes", [])
+    next_batch = state.get("next_batch", {}) or {}
+
+    head_cells = "".join(f"<th>{esc(label)}</th>" for _, label in STAGES)
+    rows = []
+    for ep in episodes:
+        stages = ep.get("stages", {})
+        cells = "".join(cell_html(stages.get(key, {})) for key, _ in STAGES)
+        rows.append(
+            f'<tr><td class="ep">{esc(ep.get("id", ""))}<span class="meta">{esc(ep.get("title", ""))}</span></td>{cells}</tr>'
+        )
+    table = f'<table><thead><tr><th>화</th>{head_cells}</tr></thead><tbody>{"".join(rows)}</tbody></table>'
+
+    legend = "".join(
+        f'<span class="{cls}"><span class="badge">{label}</span> {key}</span>'
+        for key, (label, cls) in STATUS_LABEL.items()
+    )
+
+    task = next_batch.get("task", "(없음)")
+    scheduled = next_batch.get("scheduled_at", "(미정)")
+    if isinstance(scheduled, datetime):
+        scheduled = scheduled.isoformat()
+
+    return f"""<!DOCTYPE html>
+<!-- 자동 생성 파일 — 직접 수정 금지. bin/generate-board가 state/state.json으로부터 생성함 -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLE33 현황판 — 마션 SF코믹</title>
+<style>
+:root{{--bg:#0b0f1a;--card:#131a2b;--line:#243049;--tx:#e8ecf5;--sub:#93a0b8;--acc:#7ab}}
+*{{box-sizing:border-box}}
+body{{margin:0;font-family:system-ui,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg);color:var(--tx);line-height:1.6}}
+main{{max-width:960px;margin:0 auto;padding:24px 16px 48px}}
+h1{{font-size:1.5rem;margin:0 0 4px}}
+.sub{{color:var(--sub);font-size:.9rem;margin:0 0 20px}}
+.card{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}}
+.scroll{{overflow-x:auto;-webkit-overflow-scrolling:touch}}
+table{{border-collapse:collapse;width:100%;min-width:640px}}
+th,td{{border:1px solid var(--line);padding:8px 10px;text-align:center;font-size:.85rem}}
+thead th{{background:#0f1526;color:var(--sub);font-weight:600}}
+td.ep{{font-weight:700;white-space:nowrap}}
+.badge{{display:inline-block;min-width:44px;padding:2px 8px;border-radius:999px;font-size:.78rem;font-weight:700}}
+.st-todo .badge{{background:#26304a;color:#9fb0cc}}
+.st-run .badge{{background:#3a2f12;color:#ffd479}}
+.st-done .badge{{background:#12331f;color:#6fe3a1}}
+.st-block .badge{{background:#3a1620;color:#ff8fa3}}
+.legend .badge{{margin-right:2px}}
+.meta{{display:block;font-size:.75rem;color:var(--sub);margin-top:4px}}
+.ts{{display:block;font-size:.68rem;color:#5b688a;margin-top:2px}}
+.kv{{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.92rem}}
+.kv b{{color:var(--sub);font-weight:600}}
+.rule{{margin:12px 0 0;font-size:.78rem;color:var(--sub)}}
+footer{{color:var(--sub);font-size:.82rem;text-align:center;margin-top:8px}}
+footer a{{color:var(--acc)}}
+.notice{{margin:6px 0 0;font-size:.8rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>🚀 CLE33 현황판 — 마션 SF코믹</h1>
+<p class="sub">웹 리더 준비 중 (2026-09-25~26 3화 공개 예정) · 동시 진행 한도(WIP) {esc(state.get("wip_limit", 3))} · 상태 갱신 {esc(state.get("updated_at", ""))}</p>
+
+<section class="card">
+<div class="legend">{legend}</div>
+<div class="scroll">
+{table}
+</div>
+<p class="rule">칸 표기: 상태 · 점수(5점 만점, 미채점 가능) · 재생성 횟수 · 마지막 갱신 시각. 규칙: 3점 미만 재생성(최대 2회).</p>
+</section>
+
+<section class="card">
+<div class="kv">
+<b>다음 작업</b><span>{esc(task)}</span>
+<b>예정 시각</b><span>{esc(scheduled)}</span>
+</div>
+</section>
+
+<footer>
+<p><a href="{ISSUE_URL}">요구사항 이슈</a> · <a href="{REPO_URL}">리포</a></p>
+<p class="notice">⚠️ 비상업 팬 각색 (The Martian, 2015) — 상업적 이용 금지</p>
+<p class="notice">자동 생성: {generated_at} · bin/generate-board (state/state.json 기반)</p>
+</footer>
+</main>
+</body>
+</html>
+"""
+
+
+def main() -> int:
+    if not STATE_PATH.is_file():
+        print(f"[오류] 상태 파일 없음: {STATE_PATH}", file=sys.stderr)
+        return 1
+    try:
+        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        print(f"[오류] state.json 파싱 실패: {exc}", file=sys.stderr)
+        return 1
+
+    generated_at = datetime.now(KST).isoformat(timespec="seconds")
+    OUT_PATH.write_text(build_html(state, generated_at), encoding="utf-8")
+    print(f"[완료] {OUT_PATH} 생성 ({generated_at})")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
