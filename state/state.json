@@ -1,9 +1,9 @@
 {
   "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
-  "updated_at": "2026-09-23T08:30:00+09:00",
+  "updated_at": "2026-09-23T16:50:00+09:00",
   "next_batch": {
-    "task": "라이카 EP001 스토리 채점 / 대구루 CS 시트 8종 착수 / 대구루2 EP002 아웃라인",
-    "scheduled_at": "2026-09-23T12:00:00+09:00"
+    "task": "라이카 EP002·EP003 스토리 채점 / 대구루 CS-04~08 시트 / 대구루2 EP001 콘티 자동검사·채점 준비",
+    "scheduled_at": "2026-09-23T20:00:00+09:00"
   },
   "wip_limit": 3,
   "episodes": [
@@ -18,10 +18,10 @@
           "updated_at": "2026-09-23T08:30:00+09:00"
         },
         "conti": {
-          "status": "todo",
+          "status": "in_progress",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-23T16:50:00+09:00"
         },
         "image": {
           "status": "todo",
@@ -48,10 +48,10 @@
       "title": "EP002 「화성의 농부」",
       "stages": {
         "story": {
-          "status": "in_progress",
+          "status": "done",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T08:10:00+09:00"
+          "updated_at": "2026-09-23T16:50:00+09:00"
         },
         "conti": {
           "status": "todo",
@@ -84,10 +84,10 @@
       "title": "EP003 「집으로」",
       "stages": {
         "story": {
-          "status": "todo",
+          "status": "done",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-23T16:50:00+09:00"
         },
         "conti": {
           "status": "todo",
