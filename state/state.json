@@ -1,9 +1,9 @@
 {
   "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
-  "updated_at": "2026-09-24T00:00:00+09:00",
+  "updated_at": "2026-09-24T08:55:00+09:00",
   "next_batch": {
-    "task": "대구루: CS-04·07·08 코믹 화풍 재생성(감수 미달 FB-20260923-12) → EP001 이미지 착수 / 대구루2: FB-11 수정 3건 반영 + EP002 콘티 / 라이카: 재생성 시트 즉시 재감수",
-    "scheduled_at": "2026-09-23T20:00:00+09:00"
+    "task": "대구루: CS-04·07·08 재생성 + CS-09(NASA 관제실·인물) 신규 제작(FB-20260924-03 승인) → EP001 이미지 착수 / 대구루2: 이미지 단계 보조·총괄 / 라이카: 시트 재감수 + 이미지 3단계 채점",
+    "scheduled_at": "2026-09-24T12:00:00+09:00"
   },
   "wip_limit": 3,
   "episodes": [
@@ -54,10 +54,10 @@
           "updated_at": "2026-09-23T16:58:00+09:00"
         },
         "conti": {
-          "status": "in_progress",
-          "score": null,
+          "status": "done",
+          "score": 4,
           "regen_count": 0,
-          "updated_at": "2026-09-24T08:14:10+09:00"
+          "updated_at": "2026-09-24T08:55:00+09:00"
         },
         "image": {
           "status": "todo",
@@ -90,10 +90,10 @@
           "updated_at": "2026-09-23T16:58:00+09:00"
         },
         "conti": {
-          "status": "in_progress",
-          "score": null,
+          "status": "done",
+          "score": 4,
           "regen_count": 0,
-          "updated_at": "2026-09-24T08:16:12+09:00"
+          "updated_at": "2026-09-24T08:55:00+09:00"
         },
         "image": {
           "status": "todo",
