@@ -1,8 +1,8 @@
 {
   "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
-  "updated_at": "2026-09-23T16:50:00+09:00",
+  "updated_at": "2026-09-23T16:58:00+09:00",
   "next_batch": {
-    "task": "라이카 EP002·EP003 스토리 채점 / 대구루 CS-04~08 시트 / 대구루2 EP001 콘티 자동검사·채점 준비",
+    "task": "대구루2: 콘티 수정요청 2건 반영(컷수 SPEC 합의·CS-02/03 메모 보강)+바이블 각색 오타·벤치 정리 / 대구루: CS-04~08 시트 → EP001 이미지 착수 / 라이카: EP001 이미지 검수 준비",
     "scheduled_at": "2026-09-23T20:00:00+09:00"
   },
   "wip_limit": 3,
@@ -18,10 +18,10 @@
           "updated_at": "2026-09-23T08:30:00+09:00"
         },
         "conti": {
-          "status": "in_progress",
-          "score": null,
+          "status": "done",
+          "score": 4,
           "regen_count": 0,
-          "updated_at": "2026-09-23T16:50:00+09:00"
+          "updated_at": "2026-09-23T16:58:00+09:00"
         },
         "image": {
           "status": "todo",
@@ -49,9 +49,9 @@
       "stages": {
         "story": {
           "status": "done",
-          "score": null,
+          "score": 5,
           "regen_count": 0,
-          "updated_at": "2026-09-23T16:50:00+09:00"
+          "updated_at": "2026-09-23T16:58:00+09:00"
         },
         "conti": {
           "status": "todo",
@@ -85,9 +85,9 @@
       "stages": {
         "story": {
           "status": "done",
-          "score": null,
+          "score": 5,
           "regen_count": 0,
-          "updated_at": "2026-09-23T16:50:00+09:00"
+          "updated_at": "2026-09-23T16:58:00+09:00"
         },
         "conti": {
           "status": "todo",
