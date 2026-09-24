@@ -1,0 +1,68 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# CLE33 EP001 페이지 v2 재생성 (대구루) — 회장님 지시 반영:
+# ① 시트 자원 실질 활용: 시트 PNG 참조 + CANON 외형 기술문 병행
+# ② 대사-이미지 조화: 웹 리더가 대사를 얹으므로 컷 구도에 여백 배려
+# 대상: CS-04·07·08 참조 11쪽 (01,02,03,04,05,06,08,09,13,14,16) — 나머지 5쪽은 CS-01/06만 사용해 유지
+set -u
+cd "$(dirname "$0")/.."
+SHEET=assets/sheets
+OUT=episodes/EP001/images
+PDIR=assets/pages/EP001/prompts
+mkdir -p "$OUT/v1-backup"
+LOG=assets/pages/EP001/regen-v2.log
+: > "$LOG"
+
+WATNEY="왓트니 외형(시트 CS-01 그대로): 30대 중반 다부진 체격, 밝은 구리빛 피부, 짧고 헝클어진 갈색 머리, 장난기 섞인 미소. 우주복은 흰색 바탕에 주황 포인트."
+CREW="승무원 외형(시트 CS-03 그대로): 거구 흑발 남성, 금발 포니테일 여성, 갈색 머리 단정 남성, 뿔테 안경 마른 중년 남성 — 전원 네이비 점프수트 계열."
+STYLE="세로형 만화책 한 페이지(비율 2:3). 화풍: SF 코믹북 스타일, 깔끔한 굵은 선, 밝은 채도, 만화적 과장 표정."
+NOTEXT="글자·텍스트·숫자·말풍선 절대 금지(대사·자막은 웹 리더가 이미지 위에 표시함). 각 컷은 상단 자막줄·인물 입 근처에 여백을 남겨 대사가 얹히도록 구도. 첨부 참조 시트의 외형·화풍·색감을 그대로 유지."
+
+declare -A CUTS REFS
+CUTS[01]="2컷 구성(세로 배치): [컷1] 원경 — 붉은 화성 평원과 지평선, 멀리 작은 해베(원통형 거주 모듈) 실루엣, 상단 자막 공간. [컷2] 원경 — 흙빛 하늘과 흐릿한 태양, 적갈색 색조 통일."
+REFS[01]="$SHEET/CS-08-mars-landscape.png"
+
+CUTS[02]="3컷 구성(위 가로 컷 + 아래 두 컷): [컷1] 해베 내부 — 식탁에 둘러앉아 웃는 크루. $CREW [컷2] 클로즈업 — 손으로 쥔 일지 노트와 연필(빈 노트). [컷3] 중경 — $WATNEY 웃으며 흙 샘플 봉투 흔듦."
+REFS[02]="$SHEET/CS-01-watney.png $SHEET/CS-03-crew.png $SHEET/CS-04-hab-interior.png"
+
+CUTS[03]="3컷 구성(세로 3단): [컷1] 원경 — 시야가 뿌옇게 흐려지는 화성 표면, 모래폭풍 접근. [컷2] 중경 — 해베 내부, 붉은 경고등 점멸. [컷3] 클로즈업 — 우주헬멧 속 찡그린 왓트니. $WATNEY"
+REFS[03]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[04]="3컷 구성: [컷1] 중경 — 거센 모래폭풍 속 로프 잡고 이동하는 크루. $CREW [컷2] 인서트 — 기울어진 이륙선 계기판 클로즈업(경고등만, 숫자 없이). [컷3] 중경 — 안테나 파편이 바람에 날아가는 순간, 임팩트 직전."
+REFS[04]="$SHEET/CS-03-crew.png $SHEET/CS-07-mav-hermes.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[05]="2컷 구성 — 위 풀컷 + 아래 가로 원경: [컷1(풀컷)] 거센 폭풍 속 화성에서 이륙하는 이륙선(MAV, 시트 외형 그대로), 분진 기둥. [컷2] 원경 — 폭풍에 파묻히는 착륙 지점, 텅 빈 황무지."
+REFS[05]="$SHEET/CS-07-mav-hermes.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[06]="2컷 구성 — 위 풀컷 + 아래 중경: [컷1(풀컷)] 폭풍 지난 뒤 고요한 화성 풍경, 쓰러진 태양광 패널, 맑은 하늘. [컷2] 중경 — 해베 내부 바닥에 쓰러진 왓트니, 흐릿한 초점, 눈 반개. $WATNEY"
+REFS[06]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[08]="3컷 구성: [컷1] 인서트 — 식량 보관 박스와 계산 노트(숫자 없이, 계산 중 느낌의 빈 노트와 손가락). [컷2] 클로즈업 — 손가락 꼽아 계산하다 씩 웃는 왓트니. [컷3] 중경 — 통신 콘솔 앞 왓트니, 화면은 어둡게(무신호). $WATNEY"
+REFS[08]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png"
+
+CUTS[09]="2컷 구성: [컷1] 중경 — 밤, 해베 창밖 하늘에 작게 빛나는 지구, 창가의 왓트니 뒷모습. [컷2] 클로즈업 — 우주헬멧 유리에 반사된 왓트니 자신의 얼굴, 정적. $WATNEY"
+REFS[09]="$SHEET/CS-01-watney.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[13]="2컷 구성: [컷1] 중경 — 해베 연료실의 하이드라진 연료 탱크 앞에 선 왓트니(경계 표정). [컷2] 중경 — 보호 고글 쓰고 떨리는 손으로 도구 든 왓트니, 각오 만점 코믹 표정. $WATNEY"
+REFS[13]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png"
+
+CUTS[14]="3컷 구성: [컷1] 중경 — 실험 장치에서 떨어지는 물방울 한 방울(특写). [컷2] 클로즈업 — 두 팔 들고 환호하는 왓트니(만화적 과장). [컷3] 중경 — 흙 침대에 물 붓는 왓트니. $WATNEY"
+REFS[14]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png $SHEET/CS-06-potato-farm.png"
+
+CUTS[16]="2컷 구성: [컷1] 중경 — 지구 NASA 위성 관제실, 큰 모니터들 응시하는 젊은 여성 엔지니어 민디(시트 CS-09 외형 그대로). [컷2] 클로즈업 — 모니터 확대 — 화성 위성 사진 속 정돈된 태양광 패널들."
+REFS[16]="$SHEET/CS-09-nasa-control.png $SHEET/CS-08-mars-landscape.png"
+
+for NN in 01 02 03 04 05 06 08 09 13 14 16; do
+  [ -f "$OUT/page-$NN.png" ] && cp "$OUT/page-$NN.png" "$OUT/v1-backup/page-$NN.png"
+  PROMPT="만화 한 페이지 이미지를 생성해줘. $STYLE ${CUTS[$NN]} $NOTEXT"
+  echo "$PROMPT" > "$PDIR/page-$NN-v2.md"
+  echo "[$(date +%H:%M:%S)] page-$NN v2 생성 시작" >> "$LOG"
+  codex exec "$PROMPT" -c model=gpt-5.6-terra $(for r in ${REFS[$NN]}; do echo -n "-i $r "; done) >/dev/null 2>&1
+  PNG=$(ls -t ~/.codex/generated_images/*/exec-*.png 2>/dev/null | head -1)
+  if [ -n "$PNG" ]; then
+    cp "$PNG" "$OUT/page-$NN.png"
+    echo "[$(date +%H:%M:%S)] page-$NN v2 완료" >> "$LOG"
+  else
+    echo "[$(date +%H:%M:%S)] page-$NN v2 실패" >> "$LOG"
+  fi
+done
+echo "[$(date +%H:%M:%S)] v2 배치 종료" >> "$LOG"
