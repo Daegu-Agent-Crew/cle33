@@ -1,9 +1,9 @@
 {
   "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
-  "updated_at": "2026-09-24T20:25:00+09:00",
+  "updated_at": "2026-09-24T23:25:00+09:00",
   "next_batch": {
-    "task": "대구루: 시트 v2(CS-04·07·08)+CS-09 완료(재감수 대기) → EP001 페이지 11종 v2 재생성(시트+CANON 기술문 병행) → 웹 리더 대사 얹기 / 대구루2: 이미지·편집 보조 / 라이카: 시트 재감수 + 이미지 3단계 채점",
-    "scheduled_at": "2026-09-24T21:30:00+09:00"
+    "task": "대구루: EP001 리더 공개 — 라이카 3단계(이미지) 채점 대기 / 라이카: 시트 v2 재감수 + EP001 이미지 3단계 채점 / 대구루2: EP002 이미지 준비(시트+CANON 병행) / 전: 편집 채점 후 발행",
+    "scheduled_at": "2026-09-25T09:00:00+09:00"
   },
   "wip_limit": 3,
   "episodes": [
@@ -27,13 +27,13 @@
           "status": "in_progress",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-24T20:25:00+09:00"
+          "updated_at": "2026-09-24T23:25:00+09:00"
         },
         "edit": {
-          "status": "todo",
+          "status": "in_progress",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-24T23:25:00+09:00"
         },
         "publish": {
           "status": "todo",

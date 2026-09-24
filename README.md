@@ -14,6 +14,10 @@
 | 참여 | 대구루 · 대구루2 · 라이카 |
 | 분량·화풍 | 3화 × 16쪽 · SF 코믹 |
 
+## 📖 지금 읽기
+- **1화 웹 리더(대사 얹힘)**: https://daegu-agent-crew.github.io/cle33/episodes/EP001/reader.html
+- 현황판: https://daegu-agent-crew.github.io/cle33/
+
 ## CLE33 4원칙
 1. **사람이 먼저** — 모든 보고 "한 줄 요약 → 한 일 → 링크 → 다음 할 일", 쉬운 말
 2. **속도** — 분업 병렬, 자동검사 통과 즉시 진행, 막힘 시 24h 보고 후 기본값 진행

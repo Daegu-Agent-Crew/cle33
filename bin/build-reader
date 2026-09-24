@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""CLE33 웹 리더 생성기 — 콘티(storyboard md)에서 대사를 추출해 페이지 이미지에 얹는 리더 HTML 생성.
+
+사용: python3 bin/build-reader EP001 ["제목"]
+산출: episodes/<EP>/reader.html (이미지 ../images/page-NN.png 상대경로, 자기완결형)
+원칙: 이미지는 무텍스트, 대사는 본 리더가 표시(회장님 지시 2026-09-24).
+"""
+import html
+import json
+import re
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+EP = sys.argv[1] if len(sys.argv) > 1 else "EP001"
+TITLE = sys.argv[2] if len(sys.argv) > 2 else f"{EP} 「폭풍, 그리고 혼자」"
+
+CUT_RE = re.compile(r"^- \*\*(\d+)-([A-Z])\*\* \| (\S+) \| (.+)$")
+SUB_RE = re.compile(r"^  - (대사|효과음|메모): ?(.*)$")
+
+def parse_page(path: Path):
+    cuts = []
+    cur = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = CUT_RE.match(line)
+        if m:
+            cur = {"id": f"{m.group(1)}-{m.group(2)}", "cam": m.group(3), "desc": m.group(4).strip(),
+                   "caption": None, "speech": [], "sfx": None}
+            cuts.append(cur)
+            continue
+        m = SUB_RE.match(line)
+        if m and cur:
+            kind, val = m.group(1), m.group(2).strip()
+            if not val:
+                continue
+            if kind == "효과음":
+                cur["sfx"] = val
+            elif kind == "대사":
+                if val.startswith("자막:") or val.startswith("화면:"):
+                    cur["caption"] = val.split(":", 1)[1].strip()
+                elif ":" in val:
+                    sp, tx = val.split(":", 1)
+                    cur["speech"].append([sp.strip(), tx.strip()])
+                elif val.startswith("왓트니(내레이션)"):
+                    pass  # 대사 본문은 desc 쪽 콘티 참조
+                else:
+                    cur["caption"] = val
+    return cuts
+
+pages = []
+for n in range(1, 17):
+    p = REPO / "episodes" / EP / "storyboard" / f"page-{n:02d}.md"
+    pages.append({"n": n, "img": f"images/page-{n:02d}.png", "cuts": parse_page(p)})
+
+data = json.dumps(pages, ensure_ascii=False)
+
+page_html = ""
+for pg in pages:
+    caps, bubbles, sfx = [], [], []
+    for c in pg["cuts"]:
+        if c["caption"]:
+            caps.append(f'<div class="cap">{html.escape(c["caption"])}</div>')
+        for sp, tx in c["speech"]:
+            bubbles.append(
+                f'<div class="bub"><span class="who">{html.escape(sp)}</span>'
+                f'<span class="txt">{html.escape(tx)}</span>'
+                f'<i class="tag">{c["id"]}</i></div>')
+        if c["sfx"] and c["sfx"] not in ("(무음)",):
+            sfx.append(f'<span class="sfx">{html.escape(c["sfx"])}</span>')
+    page_html += f'''<section class="page" id="p{pg["n"]}">
+  <div class="frame">
+    <img src="{pg["img"]}" alt="{EP} page {pg["n"]}" loading="lazy">
+    <div class="caps">{''.join(caps)}</div>
+    <div class="sfxs">{''.join(sfx)}</div>
+  </div>
+  {''.join(bubbles)}
+</section>'''
+
+out = f'''<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLE33 {html.escape(TITLE)}</title>
+<style>
+:root{{--bg:#141216;--fg:#f5f2ec;--acc:#ff7a3c;--bub:#fffdf7;--ink:#181410}}
+*{{box-sizing:border-box;margin:0}}
+body{{background:var(--bg);color:var(--fg);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}}
+header{{padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}}
+header h1{{font-size:16px;letter-spacing:.5px}}
+header a{{color:#9ad0ff;text-decoration:none;font-size:13px}}
+.toggle{{background:var(--acc);color:#1a1208;border:none;border-radius:18px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer}}
+main{{max-width:760px;margin:0 auto;padding:8px 10px 40px}}
+.page{{margin:0 0 26px}}
+.frame{{position:relative;border-radius:8px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.5)}}
+.frame img{{width:100%;display:block}}
+.caps{{position:absolute;top:0;left:0;right:0;padding:8px 10px;display:flex;flex-direction:column;gap:5px;pointer-events:none}}
+.cap{{align-self:flex-start;background:rgba(12,10,9,.82);color:#ffe9c9;font-size:13px;font-weight:600;padding:4px 10px;border-radius:4px;border-left:3px solid var(--acc);max-width:92%}}
+.sfxs{{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:5px;align-items:flex-end;pointer-events:none}}
+.sfx{{background:#ffd23c;color:#3a2a00;font-weight:900;font-size:13px;padding:3px 9px;border-radius:14px;transform:rotate(4deg);box-shadow:0 2px 6px rgba(0,0,0,.45)}}
+.bub{{background:var(--bub);color:var(--ink);border:2.5px solid var(--ink);border-radius:14px;padding:8px 12px;margin:8px 2px 0;position:relative;max-width:560px}}
+.bub::before{{content:"";position:absolute;top:-9px;left:22px;width:14px;height:14px;background:var(--bub);border-left:2.5px solid var(--ink);border-top:2.5px solid var(--ink);transform:rotate(45deg)}}
+.bub .who{{display:block;font-weight:900;font-size:12.5px;color:#b34700;margin-bottom:1px}}
+.bub .txt{{font-size:14.5px;line-height:1.45}}
+.bub .tag{{position:absolute;right:9px;top:-9px;font-style:normal;font-size:10.5px;background:var(--ink);color:#fff;border-radius:8px;padding:1px 7px}}
+body.nobub .bub{{display:none}}
+footer{{text-align:center;padding:14px;font-size:12.5px;color:#8d8579}}
+footer a{{color:#9ad0ff;text-decoration:none}}
+</style></head><body>
+<header><h1>📋 CLE33 {html.escape(TITLE)}</h1>
+<div><button class="toggle" onclick="document.body.classList.toggle('nobub');this.textContent=document.body.classList.contains('nobub')?'💬 대사 보기':'👁 그림만 보기'">👁 그림만 보기</button>
+<a href="../../index.html">현황판</a></div></header>
+<main>{page_html}</main>
+<footer>마션(2015) 비상업 팬 각색 · Daegu-Agent-Crew CLE33 · <a href="https://github.com/Daegu-Agent-Crew/cle33">GitHub</a></footer>
+</body></html>'''
+
+dst = REPO / "episodes" / EP / "reader.html"
+dst.write_text(out, encoding="utf-8")
+print(f"[완료] {dst} — 페이지 {len(pages)}, 컷 {sum(len(p['cuts']) for p in pages)}")
