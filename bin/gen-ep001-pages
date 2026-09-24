@@ -1,0 +1,77 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# CLE33 EP001 만화 페이지 이미지 일괄 생성 (대구루) — page-02 ~ page-16
+# 사용: codex exec "<프롬프트>" -c model=gpt-5.6-terra -i <시트...>
+# 출력: episodes/EP001/images/page-NN.png · 프롬프트 원본: assets/pages/EP001/prompts/
+set -u
+cd "$(dirname "$0")/.."
+SHEET=assets/sheets
+OUT=episodes/EP001/images
+PDIR=assets/pages/EP001/prompts
+mkdir -p "$OUT" "$PDIR"
+LOG=assets/pages/EP001/batch.log
+: > "$LOG"
+
+STYLE="세로형 만화책 한 페이지(비율 2:3). 화풍: SF 코믹북 스타일, 깔끔한 굵은 선, 밝은 채도, 만화적 과장 표정."
+NOTEXT="글자·텍스트·숫자·말풍선 절대 금지(대사·자막은 나중에 웹에서 표시함). 첨부 참조 이미지(캐릭터·배경 시트)의 외형·화풍·색감을 그대로 유지."
+
+declare -A CUTS REFS
+CUTS[02]="3컷 구성(위 가로 컷 1 + 아래 두 컷): [컷1] 해베 내부 — 식탁에 둘러앉아 웃는 크루(루이스 선장 포함 5인, 우주복 상의). [컷2] 클로즈업 — 손으로 쥔 일지 노트와 연필(빈 노트). [컷3] 중경 — 왓트니가 웃으며 흙 샘플 봉투를 흔듦."
+REFS[02]="$SHEET/CS-01-watney.png $SHEET/CS-03-crew.png $SHEET/CS-04-hab-interior.png"
+
+CUTS[03]="3컷 구성(세로 3단): [컷1] 원경 — 시야가 뿌옇게 흐려지는 화성 표면, 모래폭풍이 다가오는 느낌. [컷2] 중경 — 해베 내부, 붉은 경고등이 점멸하는 실내. [컷3] 클로즈업 — 우주헬멧 속 찡그린 왓트니 얼굴."
+REFS[03]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[04]="3컷 구성: [컷1] 중경 — 거센 모래폭풍 속 로프를 잡고 이동하는 크루(복장 통일). [컷2] 인서트 — 기울어진 이륙선 계기판 클로즈업(경고 표시등만, 숫자 없이). [컷3] 중경 — 안테나 파편이 바람에 날아가는 순간, 임팩트 직전 긴장감."
+REFS[04]="$SHEET/CS-03-crew.png $SHEET/CS-07-mav-hermes.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[05]="2컷 구성 — 위 컷은 페이지 절반 크기 풀컷, 아래 컷은 가로 원경: [컷1(풀컷)] 거센 폭풍 속 화성에서 이륙하는 이륙선(MAV), 분진 기둥. [컷2] 원경 — 폭풍에 파묻히는 착륙 지점, 텅 빈 황무지."
+REFS[05]="$SHEET/CS-07-mav-hermes.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[06]="2컷 구성 — 위 풀컷 + 아래 중경: [컷1(풀컷)] 폭풍이 지난 뒤 고요한 화성 풍경, 쓰러진 태양광 패널, 맑은 하늘. [컷2] 중경 — 해베 내부 바닥에 쓰러져 의식 없는 왓트니, 흐릿한 초점, 눈 반개."
+REFS[06]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[07]="3컷 구성: [컷1] 클로즈업 — 눈을 뜨는 왓트니 얼굴(깨어나는 순간). [컷2] 인서트 — 붉은 경고등이 켜진 산소 경고 화면(숫자 없이 경고등·그래프만). [컷3] 클로즈업 — 왓트니가 좌측 복부 부상을 직접 처치하는 장면(시트의 부상 디자인, 진지하면서 코믹한 표정)."
+REFS[07]="$SHEET/CS-01-watney.png"
+
+CUTS[08]="3컷 구성: [컷1] 인서트 — 식량 보관 박스와 계산 노트(숫자 없이, 계산 중 느낌의 빈 노트와 손가락). [컷2] 클로즈업 — 손가락을 꼽아 계산하다 씩 웃는 왓트니. [컷3] 중경 — 통신 콘솔 앞 왓트니, 콘솔 화면은 어둡게(무신호)."
+REFS[08]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png"
+
+CUTS[09]="2컷 구성: [컷1] 중경 — 밤, 해베 창밖 하늘에 작게 빛나는 지구, 창가의 왓트니 뒷모습. [컷2] 클로즈업 — 우주헬멧 유리에 반사된 왓트니 자신의 얼굴, 정적."
+REFS[09]="$SHEET/CS-01-watney.png $SHEET/CS-08-mars-landscape.png"
+
+CUTS[10]="2컷 구성: [컷1] 클로즈업 — 두 손에 쥔 화성 흙, 흙이 손가락 사이로 흩어짐. [컷2] 클로즈업 — 눈빛이 달라진(결의에 찬) 왓트니 얼굴."
+REFS[10]="$SHEET/CS-01-watney.png"
+
+CUTS[11]="2컷 구성: [컷1] 중경 — 식량 박스를 열고 감자 봉지를 개봉하는 왓트니. [컷2] 클로즈업 — 손바닥 위에 놓인 감자 하나, 스포트라이트 느낌."
+REFS[11]="$SHEET/CS-01-watney.png $SHEET/CS-06-potato-farm.png"
+
+CUTS[12]="2컷 구성: [컷1] 몽타주 — 흙밭 설계도와 물 계산 도해(숫자 없이 다이어그램·스케치 느낌 3~4조각拼). [컷2] 클로즈업 — 결심한 표정의 왓트니, 주먹을 쥐며 씩 웃음."
+REFS[12]="$SHEET/CS-01-watney.png"
+
+CUTS[13]="2컷 구성: [컷1] 중경 — 해베 연료실의 하이드라진 연료 탱크 앞에 선 왓트니(경계하는 표정). [컷2] 중경 — 보호 고글을 쓰고 떨리는 손으로 도구를 든 왓트니, 각오 만점 코믹 표정."
+REFS[13]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png"
+
+CUTS[14]="3컷 구성: [컷1] 중경 — 실험 장치에서 떨어지는 물방울 한 방울(특写). [컷2] 클로즈업 — 두 팔 들고 환호하는 왓트니(만화적 과장). [컷3] 중경 — 흙 침대에 물을 붓는 왓트니."
+REFS[14]="$SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png $SHEET/CS-06-potato-farm.png"
+
+CUTS[15]="2컷 구성: [컷1] 중경 — 해베 안 뷸록 돔 농장의 흙밭에 감자를 심는 왓트니(무릎 꿇고). [컷2] 클로즈업 — 손으로 쥔 일지 노트(빈 노트)와 흙 묻은 손."
+REFS[15]="$SHEET/CS-01-watney.png $SHEET/CS-06-potato-farm.png"
+
+CUTS[16]="2컷 구성: [컷1] 중경 — 지구 NASA 위성 관제실, 큰 모니터들을 응시하는 젊은 여성 엔지니어(민디, 실내 조명). [컷2] 클로즈업 — 모니터 확대 — 화성 위성 사진 속 정돈된 태양광 패널들."
+REFS[16]="$SHEET/CS-08-mars-landscape.png"
+
+for NN in 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16; do
+  PROMPT="만화 한 페이지 이미지를 생성해줘. $STYLE ${CUTS[$NN]} $NOTEXT"
+  echo "$PROMPT" > "$PDIR/page-$NN.md"
+  echo "[$(date +%H:%M:%S)] page-$NN 생성 시작" >> "$LOG"
+  codex exec "$PROMPT" -c model=gpt-5.6-terra $(for r in ${REFS[$NN]}; do echo -n "-i $r "; done) >/dev/null 2>&1
+  LATEST=$(ls -t ~/.codex/generated_images/ | head -1)
+  PNG=$(ls -t ~/.codex/generated_images/$LATEST/*.png 2>/dev/null | head -1)
+  if [ -n "$PNG" ]; then
+    cp "$PNG" "$OUT/page-$NN.png"
+    echo "[$(date +%H:%M:%S)] page-$NN 완료 ← $PNG" >> "$LOG"
+  else
+    echo "[$(date +%H:%M:%S)] page-$NN 실패(생성물 없음)" >> "$LOG"
+  fi
+done
+echo "[$(date +%H:%M:%S)] 배치 종료 — 성공 $(ls $OUT/page-*.png 2>/dev/null | wc -l)/16" >> "$LOG"

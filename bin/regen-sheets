@@ -1,0 +1,45 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# CLE33 시트 재생성 배치 (대구루) — CS-04·07·08 화풍 재생성 + CS-09 신규 (FB-20260923-12, FB-20260924-03)
+# 규격: SF 코믹북, 굵은 선, 밝은 채도 — 사실적 사진 렌더링 금지
+# 통과 시트(CS-01, CS-06)를 화풍 앵커로 참조
+set -u
+cd "$(dirname "$0")/.."
+SHEET=assets/sheets
+PDIR=$SHEET/prompts
+mkdir -p "$PDIR"
+LOG=$SHEET/regen-batch.log
+: > "$LOG"
+
+STYLE="SF 코믹북 스타일 — 굵은 검은 잉킹 선, 밝은 채도, 만화적 셀 셰이딩(단색 음영), 플랫 컬러. 절대 사실적 사진·3D 렌더링 금지. 첨부 참조 이미지(통과된 코믹 시트)와 동일한 화풍으로 통일."
+ANCHOR01="$SHEET/CS-01-watney.png"
+ANCHOR06="$SHEET/CS-06-potato-farm.png"
+
+declare -A PROMPTS REFS OUTS
+OUTS[04]="$SHEET/CS-04-habinterior-new.png"; OUTS[07]="$SHEET/CS-07-mav-new.png"; OUTS[08]="$SHEET/CS-08-mars-new.png"; OUTS[09]="$SHEET/CS-09-nasa-control.png"
+
+PROMPTS[04]="배경 설정 시트를 코믹북 화풍으로 생성해줘. 화성 거주 모듈(해베) 내부 전경: 원통형 실내, 2층 침대, 실험대와 과학 장비, 작은 원형 창문(밖은 붉은 화성), 따뜻한 실내등. 시트용 구도(정면 광각). $STYLE"
+REFS[04]="$ANCHOR01 $ANCHOR06"
+
+PROMPTS[07]="배경 설정 시트를 코믹북 화풍으로 생성해줘. 두 가지: [상단] 화성 이륙선 MAV(뾰족은 우주선, 착륙 다리) 외형 [하단] 궤도선 허머스(대형 우주 정거장 형태) 외형. 시트용 나란히 배치. $STYLE"
+REFS[07]="$ANCHOR01 $ANCHOR06"
+
+PROMPTS[08]="배경 설정 시트를 코믹북 화풍으로 생성해줘. 화성 풍경 3분할: [주간] 붉은 황무지와 지평선, 멀리 태양광 패널 [야간] 어두운 하늘과 별, 작게 빛나는 지구 [패널 근경] 태양광 패널 배열. $STYLE"
+REFS[08]="$ANCHOR01 $ANCHOR06"
+
+PROMPTS[09]="신규 설정 시트를 코믹북 화풍으로 생성해줘. NASA 위성 관제실: [상단] 넓은 관제실 전경 — 대형 모니터 벽, 콘솔 책상들, 어두운 실내에 모니터 빛 [하단] 젊은 여성 엔지니어 민디 — 헤드셋, 놀란 표정, 캐주얼 사무 복장, 정면·측면 두 포즈. $STYLE"
+REFS[09]="$ANCHOR01 $SHEET/CS-03-crew.png $ANCHOR06"
+
+for K in 04 07 08 09; do
+  P="${PROMPTS[$K]}"
+  echo "$P" > "$PDIR/CS-$K-regen.md"
+  echo "[$(date +%H:%M:%S)] CS-$K 생성 시작" >> "$LOG"
+  codex exec "$P" -c model=gpt-5.6-terra $(for r in ${REFS[$K]}; do echo -n "-i $r "; done) >/dev/null 2>&1
+  PNG=$(ls -t ~/.codex/generated_images/*/exec-*.png 2>/dev/null | head -1)
+  if [ -n "$PNG" ]; then
+    cp "$PNG" "${OUTS[$K]}"
+    echo "[$(date +%H:%M:%S)] CS-$K 완료 ← $PNG" >> "$LOG"
+  else
+    echo "[$(date +%H:%M:%S)] CS-$K 실패" >> "$LOG"
+  fi
+done
+echo "[$(date +%H:%M:%S)] 시트 배치 종료" >> "$LOG"
