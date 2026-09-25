@@ -15,6 +15,7 @@
 | 분량·화풍 | 3화 × 16쪽 · SF 코믹 |
 
 ## 📖 지금 읽기
+- **2화 웹 리더(말풍선 내장)**: https://daegu-agent-crew.github.io/cle33/episodes/EP002/reader.html
 - **1화 웹 리더(대사 얹힘)**: https://daegu-agent-crew.github.io/cle33/episodes/EP001/reader.html
 - 현황판: https://daegu-agent-crew.github.io/cle33/
 

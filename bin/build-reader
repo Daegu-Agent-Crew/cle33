@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""CLE33 웹 리더 생성기 — 콘티(storyboard md)에서 대사를 추출해 페이지 이미지에 얹는 리더 HTML 생성.
+"""CLE33 웹 리더 생성기 v2 — 콘티(storyboard md)에서 나레이션·자막·(폴백)대사를 추출해 리더 HTML 생성.
 
 사용: python3 bin/build-reader EP001 ["제목"]
 산출: episodes/<EP>/reader.html (이미지 ../images/page-NN.png 상대경로, 자기완결형)
-원칙: 이미지는 무텍스트, 대사는 본 리더가 표시(회장님 지시 2026-09-24).
+원칙 (FB-20260925-01):
+  - 대사·효과음은 이미지에 말풍선으로 내장(1순위). episodes/<EP>/baked.json에 쪽 번호 목록이 있으면
+    그 쪽은 리더가 대사·효과음을 얹지 않는다.
+  - 나레이션(콘티 '나레이션|텍스트 박스' + 화자에 '(내레이션)' 포함 대사)은 리더가 회색 박스로 표시.
+  - 자막(자막: 항목)은 리더가 항상 표시. 목록에 없는 쪽 = 말풍선 내장 실패 폴백 → 기존처럼 전부 얹음.
 """
 import html
 import json
@@ -17,12 +21,18 @@ EP = sys.argv[1] if len(sys.argv) > 1 else "EP001"
 TITLE = sys.argv[2] if len(sys.argv) > 2 else f"{EP} 「폭풍, 그리고 혼자」"
 
 CUT_RE = re.compile(r"^- \*\*(\d+)-([A-Z])\*\* \| (\S+) \| (.+)$")
+NAR_RE = re.compile(r"^- \*\*나레이션\*\* \| [^|]+ \| (.+)$")
 SUB_RE = re.compile(r"^  - (대사|효과음|메모): ?(.*)$")
 
 def parse_page(path: Path):
     cuts = []
+    narration = []
     cur = None
     for line in path.read_text(encoding="utf-8").splitlines():
+        m = NAR_RE.match(line)
+        if m:
+            narration.append(m.group(1).strip())
+            continue
         m = CUT_RE.match(line)
         if m:
             cur = {"id": f"{m.group(1)}-{m.group(2)}", "cam": m.group(3), "desc": m.group(4).strip(),
@@ -42,33 +52,55 @@ def parse_page(path: Path):
                 elif ":" in val:
                     sp, tx = val.split(":", 1)
                     cur["speech"].append([sp.strip(), tx.strip()])
-                elif val.startswith("왓트니(내레이션)"):
-                    pass  # 대사 본문은 desc 쪽 콘티 참조
                 else:
                     cur["caption"] = val
-    return cuts
+    return cuts, narration
+
+baked_path = REPO / "episodes" / EP / "baked.json"
+baked = set()
+if baked_path.exists():
+    try:
+        baked = {int(x) for x in json.loads(baked_path.read_text(encoding="utf-8"))}
+    except Exception as e:
+        print(f"[경고] baked.json 해석 실패 → 전체 폴백 모드: {e}")
 
 pages = []
 for n in range(1, 17):
     p = REPO / "episodes" / EP / "storyboard" / f"page-{n:02d}.md"
-    pages.append({"n": n, "img": f"images/page-{n:02d}.png", "cuts": parse_page(p)})
+    cuts, narration = parse_page(p)
+    # '(내레이션)' 화자 대사 → 리더 나레이션 박스로 이동 (이미지에 내장하지 않는 성격의 글)
+    plain_speech = []
+    for c in cuts:
+        for sp, tx in c["speech"]:
+            if "내레이션" in sp:
+                narration.append(tx)
+            else:
+                plain_speech.append([sp, tx, c["id"]])
+    pages.append({"n": n, "img": f"images/page-{n:02d}.png", "cuts": cuts,
+                  "narration": narration, "speech": plain_speech, "baked": n in baked})
 
 data = json.dumps(pages, ensure_ascii=False)
 
 page_html = ""
 for pg in pages:
+    nars = [f'<div class="nar">{html.escape(t)}</div>' for t in pg["narration"]]
     caps, bubbles, sfx = [], [], []
     for c in pg["cuts"]:
         if c["caption"]:
             caps.append(f'<div class="cap">{html.escape(c["caption"])}</div>')
-        for sp, tx in c["speech"]:
+        if c["sfx"] and c["sfx"] not in ("(무음)",):
+            sfx.append(f'<span class="sfx">{html.escape(c["sfx"])}</span>')
+    if not pg["baked"]:  # 폴백: 말풍선 내장 안 된 쪽만 리더가 대사 얹기
+        for sp, tx, cid in pg["speech"]:
             bubbles.append(
                 f'<div class="bub"><span class="who">{html.escape(sp)}</span>'
                 f'<span class="txt">{html.escape(tx)}</span>'
-                f'<i class="tag">{c["id"]}</i></div>')
-        if c["sfx"] and c["sfx"] not in ("(무음)",):
-            sfx.append(f'<span class="sfx">{html.escape(c["sfx"])}</span>')
+                f'<i class="tag">{cid}</i></div>')
+        sfx = [s for s in sfx]
+    else:
+        sfx = []
     page_html += f'''<section class="page" id="p{pg["n"]}">
+  {''.join(nars)}
   <div class="frame">
     <img src="{pg["img"]}" alt="{EP} page {pg["n"]}" loading="lazy">
     <div class="caps">{''.join(caps)}</div>
@@ -91,6 +123,7 @@ header a{{color:#9ad0ff;text-decoration:none;font-size:13px}}
 .toggle{{background:var(--acc);color:#1a1208;border:none;border-radius:18px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer}}
 main{{max-width:760px;margin:0 auto;padding:8px 10px 40px}}
 .page{{margin:0 0 26px}}
+.nar{{background:#33383f;color:#e8e6e0;font-style:italic;font-size:14px;line-height:1.5;padding:9px 14px;border-radius:6px;border-left:4px solid #8b93a1;margin:0 2px 8px;max-width:560px}}
 .frame{{position:relative;border-radius:8px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.5)}}
 .frame img{{width:100%;display:block}}
 .caps{{position:absolute;top:0;left:0;right:0;padding:8px 10px;display:flex;flex-direction:column;gap:5px;pointer-events:none}}
@@ -103,6 +136,7 @@ main{{max-width:760px;margin:0 auto;padding:8px 10px 40px}}
 .bub .txt{{font-size:14.5px;line-height:1.45}}
 .bub .tag{{position:absolute;right:9px;top:-9px;font-style:normal;font-size:10.5px;background:var(--ink);color:#fff;border-radius:8px;padding:1px 7px}}
 body.nobub .bub{{display:none}}
+body.nobub .nar{{display:none}}
 footer{{text-align:center;padding:14px;font-size:12.5px;color:#8d8579}}
 footer a{{color:#9ad0ff;text-decoration:none}}
 </style></head><body>
@@ -115,4 +149,6 @@ footer a{{color:#9ad0ff;text-decoration:none}}
 
 dst = REPO / "episodes" / EP / "reader.html"
 dst.write_text(out, encoding="utf-8")
-print(f"[완료] {dst} — 페이지 {len(pages)}, 컷 {sum(len(p['cuts']) for p in pages)}")
+nb = len(baked)
+print(f"[완료] {dst} — 페이지 {len(pages)}, 컷 {sum(len(p['cuts']) for p in pages)}, "
+      f"말풍선 내장 {nb}쪽 / 폴백 {len(pages)-nb}쪽")
