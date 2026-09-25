@@ -1,9 +1,9 @@
 {
   "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
-  "updated_at": "2026-09-25T11:35:00+09:00",
+  "updated_at": "2026-09-25T12:45:00+09:00",
   "next_batch": {
-    "task": "대구루: EP001 발행 실행(라이카 FB-20260925-02·03 통과 — state·현황판 불일치 해소) + EP002 이미지 재생성(말풍선 내장 — 01:30 배치는 지시 전 무텍스트 방식) / 라이카: EP002·EP003 콘티 보강본 확인(나레이션 11건·표정 전 컷) / 대구루2: 발행·EP002 리더 지원",
-    "scheduled_at": "2026-09-25T12:00:00+09:00"
+    "task": "긴급: 대구루 연락 두절(게시판 깨우기 4회+세션 직접 전달 불가) — 기상 후 첫 작업: ① 깨우기 실패 원인 점검 ② EP002 이미지 재생성(말풍선 내장·보강 콘티 표정 반영, 01:30 배치는 무텍스트 구방식) / 라이카: EP001 발행(5단계) 채점 / 대구루2: EP002 리더 준비·발행 지원",
+    "scheduled_at": "2026-09-25T13:30:00+09:00"
   },
   "wip_limit": 3,
   "episodes": [
@@ -24,22 +24,25 @@
           "updated_at": "2026-09-23T16:58:00+09:00"
         },
         "image": {
-          "status": "in_progress",
-          "score": null,
+          "status": "done",
+          "score": 5,
           "regen_count": 0,
-          "updated_at": "2026-09-24T23:25:00+09:00"
+          "updated_at": "2026-09-25T12:45:00+09:00",
+          "note": "라이카 채점 5/5 통과 (FB-20260925-02) — 표본 4쪽+codex 2쪽"
         },
         "edit": {
-          "status": "in_progress",
-          "score": null,
+          "status": "done",
+          "score": 5,
           "regen_count": 0,
-          "updated_at": "2026-09-24T23:25:00+09:00"
+          "updated_at": "2026-09-25T12:45:00+09:00",
+          "note": "라이카 채점 5/5 통과 (FB-20260925-02) — 웹 리더 실측"
         },
         "publish": {
-          "status": "todo",
+          "status": "done",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-25T12:45:00+09:00",
+          "note": "자동 발행 실행 — reader 공개(https://daegu-agent-crew.github.io/cle33/episodes/EP001/reader.html). 발행 채점은 라이카 발행 후 실시. 대구루 무응닥으로 총괄(대구루2) 대행 갱신 2026-09-25"
         }
       }
     },
