@@ -1,0 +1,64 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# CLE33 EP002 페이지 이미지 생성 (대구루) — 시트 PNG + CANON 기술문 병행, 무텍스트, 대사 여백 배려
+set -u
+cd "$(dirname "$0")/.."
+SHEET=assets/sheets
+OUT=episodes/EP002/images
+PDIR=assets/pages/EP002/prompts
+mkdir -p "$OUT" "$PDIR"
+LOG=assets/pages/EP002/batch.log
+: > "$LOG"
+
+WATNEY="왓트니 외형(시트 CS-01 그대로): 30대 중반 다부진 체격, 밝은 구리빛 피부, 짧고 헝클어진 갈색 머리, 장난기 섞인 미소. 우주복=흰색 바탕에 주황 포인트 / 선내복=회색 반팔 티+카키 카고 팬츠."
+MINDY="민디 외형(시트 CS-09 그대로): 젊은 여성 엔지니어, 헤드셋, 놀란·진지한 표정, 캐주얼 사무 복장."
+STYLE="세로형 만화책 한 페이지(비율 2:3). 화풍: SF 코믹북 스타일, 깔끔한 굵은 선, 밝은 채도, 만화적 과장 표정."
+NOTEXT="글자·텍스트·숫자·말풍선 절대 금지(대사·자막은 웹 리더가 표시). 각 컷은 상단 자막줄·인물 입 근처 여백 확보. 첨부 참조 시트의 외형·화풍·색감 그대로 유지."
+
+declare -A CUTS REFS
+CUTS[01]="3컷 구성: [컷1] 클로즈업 — 흙침대 위 돋아난 감자 싹과 맺힌 물방울. [컷2] 클로즈업 — 눈물 그렁한 황당한 웃음의 왓트니(선내복). $WATNEY [컷3] 인서트 — 일지 노트와 연필(빈 노트)."
+REFS[01]="$SHEET/CS-06-potato-farm.png $SHEET/CS-01-watney.png $SHEET/CS-04-hab-interior.png"
+CUTS[02]="3컷 구성: [컷1] 원경 — 해베 옆 제2 돔 골조 세우는 공사 중(확장 농장). [컷2] 중경 — 비닐 지붕 들고 비틀거리는 왓트니(우주복). [컷3] 중경 — 로버 짐칸에 흙 자루 가득. $WATNEY"
+REFS[02]="$SHEET/CS-06-potato-farm.png $SHEET/CS-08-mars-landscape.png $SHEET/CS-05-rover.png"
+CUTS[03]="3컷 구성 — 위 풀컷: [컷1(풀컷)] 찢어지는 돔 천장 — 흙과 감자가 통째로 날아가는 파국. [컷2] 중경 — 테이프와 비닐로 구멍을 필사적으로 막는 왓트니(우주복). [컷3] 클로즈업 — 떨리는 손과 이마의 진땀. $WATNEY"
+REFS[03]="$SHEET/CS-06-potato-farm.png $SHEET/CS-01-watney.png"
+CUTS[04]="3컷 구성: [컷1] 원경 — 재밀봉된 돔 앞 바닥에 주저앉는 왓트니. [컷2] 클로즈업 — 가슴 부여잡고 허탈하게 웃는 얼굴(선내복). [컷3] 중경 — 살아남은 감자 싹 확인하며 안도. $WATNEY"
+REFS[04]="$SHEET/CS-06-potato-farm.png $SHEET/CS-01-watney.png"
+CUTS[05]="3컷 구성: [컷1] 몽타주 4분할 — 해베 안 운동·일지·장비 수리·식사 루틴. [컷2] 중경 — 겨드랑이 킁킁거리다 찡그리는 왓트니(선내복, 코믹). [컷3] 인서트 — 벽 달력(빈 칸, X 표시 없이 십자 마크 나열 느낌 없이 — 숫자·글자 없이 칸만). $WATNEY"
+REFS[05]="$SHEET/CS-04-hab-interior.png $SHEET/CS-01-watney.png"
+CUTS[06]="2컷 구성: [컷1] 원경 — 붉은 지평선 달리는 로버, 먼지 꼬리. [컷2] 중경 — 로버 조수석에서 지도 펼쳐 확인하는 왓트니(우주복). $WATNEY 로버는 시트 CS-05 외형 그대로."
+REFS[06]="$SHEET/CS-05-rover.png $SHEET/CS-08-mars-landscape.png $SHEET/CS-01-watney.png"
+CUTS[07]="3컷 구성: [컷1] 원경 — 모래언덕 너머 반짝이는 무언가. [컷2] 클로즈업 — 낡은 탐사 로봇(패스파인더: 작은 6륜 로버 로봇, 반사경과 태양전지판). [컷3] 중경 — 점프하며 환호하는 왓트니(우주복, 만화적 과장). $WATNEY"
+REFS[07]="$SHEET/CS-08-mars-landscape.png $SHEET/CS-01-watney.png $SHEET/CS-05-rover.png"
+CUTS[08]="2컷 구성: [컷1] 중경 — 로버 지붕에 낡은 탐사 로봇을 묶는 왓트니(우주복). [컷2] 원경 — 석녘 노을 향해 달려가는 로버. $WATNEY"
+REFS[08]="$SHEET/CS-01-watney.png $SHEET/CS-05-rover.png $SHEET/CS-08-mars-landscape.png"
+CUTS[09]="3컷 구성: [컷1] 중경 — 해베 안에서 낡은 탐사 로봇에 배터리 연결하는 왓트니(선내복). [컷2] 인서트 — 카메라 렌즈가 돌아가며 깜빡임(작은 빛 표시). [컷3] 클로즈업 — 활짝 펴진 왓트니의 웃음. $WATNEY"
+REFS[09]="$SHEET/CS-04-hab-interior.png $SHEET/CS-01-watney.png"
+CUTS[10]="3컷 구성: [컷1] 중경 — 관제실 모니터 앞 민디 파커. $MINDY [컷2] 중경 — 술렁이는 관제실, 몰려드는 관계자들. [컷3] 클로즈업 — 50대 정장 남성 국장(테디)의 진지한 눈빛."
+REFS[10]="$SHEET/CS-09-nasa-control.png"
+CUTS[11]="3컷 구성: [컷1] 중경 — 왓트니가 글자판(빈 판)을 세우고 카메라 응시(선내복). [컷2] 인서트 — 카메라 렌즈가 판 위에서 멈춤. [컷3] 클로즈업 — 떨리는 입술, 터지는 웃음. $WATNEY"
+REFS[11]="$SHEET/CS-04-hab-interior.png $SHEET/CS-01-watney.png"
+CUTS[12]="2컷 구성 — 위 풀컷: [컷1(풀컷)] 관제실 대형 화면 앞 뛰어오르며 환호하는 사람들. [컷2] 클로즈업 — 눈물 흘리며 박수치는 민디. $MINDY"
+REFS[12]="$SHEET/CS-09-nasa-control.png"
+CUTS[13]="3컷 구성: [컷1] 몽타주 — 글자판과 모니터 오가는 교환(텍스트 없이 두 화면 교차 구도). [컷2] 클로즈업 — 정색하고 진지하게 판을 가리키는 왓트니(선내복). [컷3] 중경 — 관제실에서 웃음 터진 간부들(정장·유니폼 혼합). $WATNEY"
+REFS[13]="$SHEET/CS-01-watney.png $SHEET/CS-09-nasa-control.png"
+CUTS[14]="3컷 구성: [컷1] 중경 — 모니터에 뜬 보급 계획 도면(빈 도면 느낌). [컷2] 클로즈업 — 계산기 두드리다 표정 굳는 왓트니(선내복). [컷3] 인서트 — 재고 그래프가 경고선에 접근(빨간 선, 숫자 없이). $WATNEY"
+REFS[14]="$SHEET/CS-04-hab-interior.png $SHEET/CS-01-watney.png"
+CUTS[15]="3컷 구성: [컷1] 클로즈업 — 뺨 홀쭉해진 왓트니 얼굴(선내복, 지친 코믹). [컷2] 중경 — 서리 맞아 시들어가는 감자 잎. [컷3] 원경 — 어둑해지는 화성 하늘, 독기 어린 바람. $WATNEY"
+REFS[15]="$SHEET/CS-01-watney.png $SHEET/CS-06-potato-farm.png $SHEET/CS-08-mars-landscape.png"
+CUTS[16]="3컷 구성: [컷1] 중경 — 회의실 테이블, 갈등하는 NASA 간부들(정장). [컷2] 인서트 — 우주선 모니터에 뜨는 메시지 화면(빈 화면+커서 느낌). [컷3] 클로즈업 — 뿔테 안경 쓴 중년 엔지니어(미치)의 결심에 찬 눈빛."
+REFS[16]="$SHEET/CS-09-nasa-control.png $SHEET/CS-03-crew.png"
+
+for NN in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16; do
+  PROMPT="만화 한 페이지 이미지를 생성해줘. $STYLE ${CUTS[$NN]} $NOTEXT"
+  echo "$PROMPT" > "$PDIR/page-$NN.md"
+  echo "[$(date +%H:%M:%S)] page-$NN 생성 시작" >> "$LOG"
+  codex exec "$PROMPT" -c model=gpt-5.6-terra $(for r in ${REFS[$NN]}; do echo -n "-i $r "; done) >/dev/null 2>&1
+  PNG=$(ls -t ~/.codex/generated_images/*/exec-*.png 2>/dev/null | head -1)
+  if [ -n "$PNG" ]; then
+    cp "$PNG" "$OUT/page-$NN.png"
+    echo "[$(date +%H:%M:%S)] page-$NN 완료" >> "$LOG"
+  else
+    echo "[$(date +%H:%M:%S)] page-$NN 실패" >> "$LOG"
+  fi
+done
+echo "[$(date +%H:%M:%S)] EP002 배치 종료 — 성공 $(ls $OUT/page-*.png 2>/dev/null | wc -l)/16" >> "$LOG"
