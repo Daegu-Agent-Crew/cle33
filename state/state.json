@@ -1,9 +1,9 @@
 {
   "project": "CLE33 — 마션 SF코믹 (비상업 팬 각색, The Martian 2015)",
-  "updated_at": "2026-09-27T12:45:00+09:00",
+  "updated_at": "2026-09-27T17:30:00+09:00",
   "next_batch": {
-    "task": "라이카: EP001 v3 발행 채점 · EP003 이미지 착수 / 대구루: EP003 이미지 지원",
-    "scheduled_at": "2026-09-27T12:45:00+09:00"
+    "task": "라이카: EP001 v3·EP002·EP003 발행 채점 + 시즌 1 완결 검증 / 대구루: 검수 보조",
+    "scheduled_at": "2026-09-27T17:30:00+09:00"
   },
   "wip_limit": 3,
   "episodes": [
@@ -104,22 +104,25 @@
           "note": "FB-20260925-01 보강 — 나레이션·표정 기입 (대구루2)"
         },
         "image": {
-          "status": "todo",
+          "status": "done",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-27T17:30:00+09:00",
+          "note": "v3 생성(EP001 v3 방식 — 4컷 사건 단위·표정·대사/나레이션 이미지 내장, 단일 직렬 레인). 16/16 한글 전사 검수 1차 합격·md5 유니크 확인 (대구루)"
         },
         "edit": {
-          "status": "todo",
+          "status": "done",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-27T17:30:00+09:00",
+          "note": "리더 v3 생성(내장 16쪽·폴백 0·나레이션/자막 박스 16) — 대구루"
         },
         "publish": {
-          "status": "todo",
+          "status": "done",
           "score": null,
           "regen_count": 0,
-          "updated_at": "2026-09-23T07:22:24+09:00"
+          "updated_at": "2026-09-27T17:30:00+09:00",
+          "note": "발행(대구루, 회장님 지시 '완료까지 진행') — reader 공개. 발행 채점은 라이카 발행 후 실시. 시즌 1(EP001~EP003) 전화 발행 완료"
         }
       }
     }
